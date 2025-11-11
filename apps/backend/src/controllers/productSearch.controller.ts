@@ -41,7 +41,7 @@ export class ProductSearchController {
         category: category ? String(category) : undefined,
         discounted: discounted ? String(discounted) : undefined,
         sort: sort === 'desc' ? 'desc' : 'asc',
-        store_id: Number(store_id),
+        store_id: store_id && !isNaN(Number(store_id)) ? Number(store_id) : 1,
       });
 
       res.status(200).json({
