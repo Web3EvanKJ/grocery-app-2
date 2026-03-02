@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, Search, Grid } from 'lucide-react';
+import { ChevronDown, Search, Grid, Menu, X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/axios';
 import { ErrorModal } from '../ErrorModal';
@@ -11,6 +11,7 @@ import type { AxiosError } from 'axios';
 
 export function SearchHeader() {
   const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
@@ -44,6 +45,7 @@ export function SearchHeader() {
     else newParams.delete('name');
 
     router.push(`/find?${newParams.toString()}`);
+    setMobileOpen(false);
   };
 
   // === Handle Category Selection ===
@@ -60,72 +62,144 @@ export function SearchHeader() {
 
     router.push(`/find?${newParams.toString()}`);
     setOpen(false);
+    setMobileOpen(false);
   };
 
   return (
     <header className="w-full border-b bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
         {/* Logo */}
-        <div className="text-xl font-bold text-sky-600">Logo</div>
+        <div className="text-xl font-bold text-sky-600">Grocify</div>
 
-        {/* Category Dropdown */}
-        <div className="relative">
+        {/* ================= DESKTOP ================= */}
+        <div className="hidden flex-1 items-center gap-4 md:flex">
+          {/* Category Dropdown */}
+          <div className="relative">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 border-sky-300 text-sky-700"
+              onClick={() => setOpen(!open)}
+            >
+              <Grid className="h-4 w-4" />
+              {selectedCategory || 'Category'}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+
+            {open && (
+              <div className="absolute top-12 left-0 z-10 w-64 rounded-lg border border-gray-200 bg-white shadow-lg">
+                <h4 className="border-b px-4 py-2 font-semibold text-gray-700">
+                  Category
+                </h4>
+                <ul className="max-h-96 overflow-y-auto">
+                  <li
+                    onClick={() => handleCategoryClick('All')}
+                    className={`cursor-pointer px-4 py-2 text-sm hover:bg-sky-50 hover:text-sky-700 ${
+                      selectedCategory === '' ? 'bg-sky-100' : ''
+                    }`}
+                  >
+                    All Category
+                  </li>
+
+                  {categories.map((cat) => (
+                    <li
+                      key={cat.id}
+                      onClick={() => handleCategoryClick(cat.name)}
+                      className={`cursor-pointer px-4 py-2 text-sm hover:bg-sky-50 hover:text-sky-700 ${
+                        selectedCategory === cat.name ? 'bg-sky-100' : ''
+                      }`}
+                    >
+                      {cat.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="relative flex-1">
+            <Input
+              placeholder="Search product..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full border-sky-300 focus:ring-1 focus:ring-sky-400 focus:outline-none"
+            />
+            <button type="submit">
+              <Search className="absolute top-2.5 right-3 h-5 w-5 text-sky-500" />
+            </button>
+          </form>
+
           <Button
             variant="outline"
             className="flex items-center gap-2 border-sky-300 text-sky-700"
-            onClick={() => setOpen(!open)}
+            onClick={() => router.push('/admin/dashboard')}
           >
-            <Grid className="h-4 w-4" />
-            {selectedCategory || 'Category'}
-            <ChevronDown className="h-4 w-4" />
+            Admin Dashboard
           </Button>
-
-          {open && (
-            <div className="absolute top-12 left-0 z-10 w-64 rounded-lg border border-gray-200 bg-white shadow-lg">
-              <h4 className="border-b px-4 py-2 font-semibold text-gray-700">
-                Category
-              </h4>
-              <ul className="max-h-96 overflow-y-auto">
-                {/* "All" Category Option */}
-                <li
-                  onClick={() => handleCategoryClick('All')}
-                  className={`cursor-pointer px-4 py-2 text-sm hover:bg-sky-50 hover:text-sky-700 ${
-                    selectedCategory === '' ? 'bg-sky-100' : ''
-                  }`}
-                >
-                  All Category
-                </li>
-
-                {/* Dynamic Categories */}
-                {categories.map((cat) => (
-                  <li
-                    key={cat.id}
-                    onClick={() => handleCategoryClick(cat.name)}
-                    className={`cursor-pointer px-4 py-2 text-sm hover:bg-sky-50 hover:text-sky-700 ${
-                      selectedCategory === cat.name ? 'bg-sky-100' : ''
-                    }`}
-                  >
-                    {cat.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
 
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="relative flex-1">
-          <Input
-            placeholder="Search product..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full border-sky-300 focus:ring-1 focus:ring-sky-400 focus:outline-none"
-          />
-          <button type="submit">
-            <Search className="absolute top-2.5 right-3 h-5 w-5 text-sky-500" />
-          </button>
-        </form>
+        {/* ================= MOBILE HAMBURGER ================= */}
+        <button
+          className="ml-auto md:hidden"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? (
+            <X className="h-6 w-6 text-sky-600" />
+          ) : (
+            <Menu className="h-6 w-6 text-sky-600" />
+          )}
+        </button>
       </div>
+
+      {/* ================= MOBILE MENU ================= */}
+      {mobileOpen && (
+        <div className="space-y-4 border-t bg-white px-4 py-4 md:hidden">
+          {/* Search */}
+          <form onSubmit={handleSearch} className="relative">
+            <Input
+              placeholder="Search product..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button type="submit">
+              <Search className="absolute top-2.5 right-3 h-5 w-5 text-sky-500" />
+            </button>
+          </form>
+
+          {/* Category List */}
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-gray-600">Categories</p>
+
+            <div
+              onClick={() => handleCategoryClick('All')}
+              className="cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-sky-50"
+            >
+              All Category
+            </div>
+
+            {categories.map((cat) => (
+              <div
+                key={cat.id}
+                onClick={() => handleCategoryClick(cat.name)}
+                className="cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-sky-50"
+              >
+                {cat.name}
+              </div>
+            ))}
+          </div>
+
+          <Button
+            className="w-full border-sky-300 text-sky-700"
+            variant="outline"
+            onClick={() => {
+              router.push('/admin/dashboard');
+              setMobileOpen(false);
+            }}
+          >
+            Admin Dashboard
+          </Button>
+        </div>
+      )}
 
       <ErrorModal
         open={!!error}
