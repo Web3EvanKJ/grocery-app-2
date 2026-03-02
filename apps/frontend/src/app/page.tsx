@@ -10,6 +10,7 @@ import {
   Truck,
   Zap,
 } from 'lucide-react';
+import { Suspense } from 'react';
 
 const FEATURES = [
   {
@@ -61,7 +62,9 @@ const PROMOS = [
 function page() {
   return (
     <>
-      <SearchHeader />
+      <Suspense fallback={null}>
+        <SearchHeader />
+      </Suspense>
       <section className="relative overflow-hidden bg-gradient-to-r from-sky-600 to-cyan-400">
         {/* Background decoration */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
