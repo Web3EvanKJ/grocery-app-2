@@ -1,13 +1,11 @@
 import PageCatalog from '@/components/catalog/PageCatalog';
 import { SearchHeader } from '@/components/find/SearchHeader';
 import {
-  ArrowRight,
   Clock,
   Gift,
   MapPin,
   Percent,
   Shield,
-  ShoppingBag,
   Star,
   Truck,
   Zap,
