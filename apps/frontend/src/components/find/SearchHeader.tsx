@@ -69,7 +69,7 @@ export function SearchHeader() {
     <header className="w-full border-b bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
         {/* Logo */}
-        <div className="text-xl font-bold text-sky-600">Grocify</div>
+        <div onClick={() => router.push('/')} className="text-xl font-bold text-sky-600 cursor-pointer">Grocify</div>
 
         {/* ================= DESKTOP ================= */}
         <div className="hidden flex-1 items-center gap-4 md:flex">
