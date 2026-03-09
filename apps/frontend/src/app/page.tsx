@@ -9,7 +9,6 @@ import {
   Star,
   Truck,
   Zap,
-  Check,
   Package
 } from 'lucide-react';
 import { Suspense } from 'react';
